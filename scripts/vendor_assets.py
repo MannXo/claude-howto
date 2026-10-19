@@ -40,6 +40,12 @@ PELE_FILES: dict[str, str] = {
     ),
     "LICENSE": "311bccc30de6f7b9cbfb64232bb0c911ccb2191abe316550813ae25b2c7925b9",
 }
+# The cache keeps each file under its base name, except the ES module build:
+# with no package.json "type": "module" beside it, Node.js 20.0-20.18 and
+# 22.0-22.6 load a bare .js file as CommonJS and fail on `export`. A .mjs
+# name loads as an ES module on every Node.js >= 20.
+PELE_ESM_BUNDLE = "pele.mjs"
+_PELE_CACHE_NAMES = {"dist/pele.js": PELE_ESM_BUNDLE}
 GOOGLE_FONTS_CSS_URL = (
     "https://fonts.googleapis.com/css2?"
     "family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600"
@@ -173,7 +179,7 @@ def ensure_pele_bundle(logger: logging.Logger) -> Path:
     cache = _vendor_cache_dir() / "pele" / PELE_VERSION
     cache.mkdir(parents=True, exist_ok=True)
     for rel_path, expected in PELE_FILES.items():
-        dest = cache / Path(rel_path).name
+        dest = cache / _PELE_CACHE_NAMES.get(rel_path, Path(rel_path).name)
         if dest.is_file() and _sha256_file(dest) == expected:
             continue
         logger.info(f"Downloading Pele {PELE_VERSION}: {rel_path}")

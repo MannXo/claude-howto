@@ -167,7 +167,7 @@ class TestRenderDiagramsMocked:
 
         results = render_diagrams(["graph TD\n A-->B", "graph TD\n A-->"], logger)
 
-        assert env["cmd"] == ["/x/node", str(HELPER), str(tmp_path / "pele.js")]
+        assert env["cmd"] == ["/x/node", str(HELPER), str(tmp_path / "pele.mjs")]
         assert json.loads(env["input"])["diagrams"] == [
             "graph TD\n A-->B",
             "graph TD\n A-->",
@@ -258,7 +258,7 @@ class TestHelperWithNode:
         monkeypatch: pytest.MonkeyPatch,
         logger: logging.Logger,
     ) -> None:
-        (tmp_path / "pele.js").write_text(STUB_BUNDLE, encoding="utf-8")
+        (tmp_path / "pele.mjs").write_text(STUB_BUNDLE, encoding="utf-8")
         monkeypatch.setattr(
             pele_renderer, "ensure_pele_bundle", lambda _logger: tmp_path
         )
@@ -299,4 +299,33 @@ class TestHelperWithNode:
             check=False,
         )
         assert proc.returncode == 2
-        assert "pele.js" in proc.stderr
+        assert "pele.mjs" in proc.stderr
+
+    def test_bundle_loads_as_esm_without_syntax_detection(
+        self,
+        real_node: str,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        logger: logging.Logger,
+    ) -> None:
+        # Node.js 20.0-20.18 and 22.0-22.6 have no ES module syntax
+        # detection: a bare .js bundle loads as CommonJS and fails on
+        # `export`. Turn detection off to get that behaviour on newer Node.
+        flag = "--no-experimental-detect-module"
+        probe = subprocess.run(
+            [real_node, flag, "-e", ""], capture_output=True, timeout=60, check=False
+        )
+        if probe.returncode != 0:
+            pytest.skip(f"this Node.js does not accept {flag}")
+        monkeypatch.setenv("NODE_OPTIONS", flag)
+        bundle = tmp_path / pele_renderer.PELE_ESM_BUNDLE
+        bundle.write_text(STUB_BUNDLE, encoding="utf-8")
+        monkeypatch.setattr(
+            pele_renderer, "ensure_pele_bundle", lambda _logger: tmp_path
+        )
+
+        results = render_diagrams(["graph TD\n  A --> B"], logger)
+
+        assert bundle.suffix == ".mjs"
+        assert results[0].error is None
+        assert results[0].diagram_type == "flowchart"

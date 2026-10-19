@@ -650,7 +650,7 @@ class TestPeleBundle:
         cache, downloads, _ = fake_pele
         assert vendor_assets.ensure_pele_bundle(logger) == cache
         assert sorted(downloads) == sorted(_FAKE_PELE)
-        assert (cache / "pele.js").read_bytes() == _FAKE_PELE["dist/pele.js"]
+        assert (cache / "pele.mjs").read_bytes() == _FAKE_PELE["dist/pele.js"]
         assert (cache / "LICENSE").read_bytes() == _FAKE_PELE["LICENSE"]
 
         downloads.clear()
@@ -666,13 +666,33 @@ class TestPeleBundle:
 
         cache, downloads, _ = fake_pele
         vendor_assets.ensure_pele_bundle(logger)
-        (cache / "pele.js").write_bytes(b"tampered")
+        (cache / "pele.mjs").write_bytes(b"tampered")
         downloads.clear()
 
         vendor_assets.ensure_pele_bundle(logger)
 
         assert downloads == ["dist/pele.js"]
-        assert (cache / "pele.js").read_bytes() == _FAKE_PELE["dist/pele.js"]
+        assert (cache / "pele.mjs").read_bytes() == _FAKE_PELE["dist/pele.js"]
+
+    def test_esm_bundle_is_cached_under_an_mjs_name(
+        self,
+        fake_pele: tuple[Path, list[str], dict[str, bytes]],
+        logger: logging.Logger,
+    ) -> None:
+        # Node.js 20.0-20.18 and 22.0-22.6 load a bare .js file with no
+        # "type": "module" beside it as CommonJS and fail on `export`.
+        import vendor_assets
+
+        cache, downloads, _ = fake_pele
+        cache.mkdir(parents=True)
+        # A cache written before the rename holds only pele.js.
+        (cache / "pele.js").write_bytes(_FAKE_PELE["dist/pele.js"])
+
+        vendor_assets.ensure_pele_bundle(logger)
+
+        assert vendor_assets.PELE_ESM_BUNDLE == "pele.mjs"
+        assert "dist/pele.js" in downloads
+        assert (cache / "pele.mjs").read_bytes() == _FAKE_PELE["dist/pele.js"]
 
     def test_mismatching_download_raises_and_leaves_no_file(
         self,

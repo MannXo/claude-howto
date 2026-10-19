@@ -31,7 +31,7 @@ from typing import Any
 # Make the sibling vendor_assets module importable regardless of cwd.
 sys.path.insert(0, str(Path(__file__).parent))
 
-from vendor_assets import PELE_VERSION, ensure_pele_bundle
+from vendor_assets import PELE_ESM_BUNDLE, PELE_VERSION, ensure_pele_bundle
 
 MIN_NODE_MAJOR = 20
 HELPER = Path(__file__).with_name("pele_render.mjs")
@@ -163,7 +163,7 @@ def render_diagrams(
         ) from exc
 
     payload = json.dumps({"diagrams": list(sources), "options": options or {}})
-    cmd = [node, str(HELPER), str(bundle_dir / "pele.js")]
+    cmd = [node, str(HELPER), str(bundle_dir / PELE_ESM_BUNDLE)]
     logger.debug(f"Rendering {len(sources)} diagram(s) with Pele {PELE_VERSION}")
     try:
         # Fixed argv: resolved node binary, the repo's helper script and the

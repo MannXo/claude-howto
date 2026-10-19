@@ -1,6 +1,8 @@
 // Render a batch of Mermaid sources to SVG with a pinned Pele bundle.
 //
-// Usage: node scripts/pele_render.mjs <absolute path to pele.js>
+// Usage: node scripts/pele_render.mjs <absolute path to pele.mjs>
+// (Pele's dist/pele.js, cached under a .mjs name so every Node.js >= 20
+// loads it as an ES module.)
 // stdin:  {"diagrams": ["<mermaid source>", ...], "options": {...}}
 // stdout: {"results": [{"svg", "type", "width", "height"} | {"error": {...}}]}
 //
@@ -23,7 +25,7 @@ if (!(nodeMajor >= MIN_NODE_MAJOR)) {
   usage(`Node.js >= ${MIN_NODE_MAJOR} is required (found ${process.versions.node})`);
 }
 if (process.argv.length !== 3) {
-  usage('expected exactly one argument: the path to pele.js');
+  usage('expected exactly one argument: the path to pele.mjs');
 }
 
 const { render } = await import(pathToFileURL(process.argv[2]).href);
