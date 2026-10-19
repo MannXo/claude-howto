@@ -391,6 +391,8 @@ Use Mermaid for all diagrams. Supported types:
 - `sequenceDiagram` — interaction flows
 - `timeline` — chronological sequences
 
+GitHub renders Mermaid natively. The website and the EPUB render the same source with [Pele](https://github.com/obsidianmd/pele), pinned in `scripts/vendor_assets.py`, and the `mermaid-syntax` pre-commit hook validates every block with that same bundle, so a block that passes the hook renders everywhere.
+
 ### Style Conventions
 
 Apply consistent colors using style blocks:
@@ -419,6 +421,8 @@ graph TB
 
 - Use `["Label text"]` for node labels (enables special characters)
 - Use `<br/>` for line breaks within labels
+- Keep labels plain text and write numbered labels as-is (`["1. Load file"]`, no backslash before the period)
+- Don't rely on `%%{init}%%` directives or Mermaid themes: the website applies its own light and dark palette
 - Keep diagrams simple (max 10-12 nodes)
 - Add a brief text description below the diagram for accessibility
 - Use top-to-bottom (`TB`) for hierarchies, left-to-right (`LR`) for workflows

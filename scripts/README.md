@@ -23,7 +23,7 @@ Build an EPUB ebook from the Claude How-To markdown files.
 ## Features
 
 - Organizes chapters by folder structure (01-slash-commands, 02-memory, etc.)
-- Renders Mermaid diagrams as PNG images via the local `mmdc` CLI (no network required)
+- Renders Mermaid diagrams as SVG images with [Pele](https://github.com/obsidianmd/pele), a pinned bundle run by Node.js; CSS variables are flattened to plain colours on a white background so every EPUB reader shows them
 - Caches identical diagrams so each unique diagram is rendered only once
 - Generates a cover image from the project logo
 - Converts internal markdown links to EPUB chapter references
@@ -33,7 +33,7 @@ Build an EPUB ebook from the Claude How-To markdown files.
 
 - Python 3.10+
 - [uv](https://github.com/astral-sh/uv)
-- [`mmdc`](https://github.com/mermaid-js/mermaid-cli) on `PATH` for Mermaid diagram rendering (`npm install -g @mermaid-js/mermaid-cli`)
+- Node.js >= 20 on `PATH` for Mermaid diagram rendering. The pinned Pele bundle is downloaded on first run (network needed once), sha256-verified, and cached in `scripts/.vendor-cache/pele/`
 
 ## Quick Start
 
@@ -63,17 +63,14 @@ python scripts/build_epub.py
 
 ```
 usage: build_epub.py [-h] [--root ROOT] [--output OUTPUT] [--verbose]
-                     [--mmdc-path MMDC_PATH] [--lang {en,vi,zh,ja}]
-                     [--puppeteer-config PUPPETEER_CONFIG]
+                     [--lang {en,vi,zh,ja}]
 
 options:
   -h, --help            show this help message and exit
   --root, -r ROOT       Root directory (default: repo root)
   --output, -o OUTPUT   Output path (default: claude-howto-guide.epub)
   --verbose, -v         Enable verbose logging
-  --mmdc-path PATH      Path to mmdc binary (default: mmdc from PATH)
   --lang {en,vi,zh,ja}  Language to build (default: en)
-  --puppeteer-config P  Puppeteer config JSON passed to mmdc via -p
 ```
 
 ## Examples
@@ -87,9 +84,6 @@ uv run scripts/build_epub.py --output ~/Desktop/claude-guide.epub
 
 # Build a translated edition
 uv run scripts/build_epub.py --lang vi
-
-# Point at an mmdc that is not on PATH
-uv run scripts/build_epub.py --mmdc-path ./node_modules/.bin/mmdc
 ```
 
 ## Output
@@ -100,7 +94,7 @@ The EPUB includes:
 - Cover image with project logo
 - Table of contents with nested sections
 - All markdown content converted to EPUB-compatible HTML
-- Mermaid diagrams rendered as PNG images
+- Mermaid diagrams rendered as SVG images
 
 ## Running Tests
 
@@ -129,9 +123,9 @@ Managed via PEP 723 inline script metadata:
 
 ## Troubleshooting
 
-**Build fails with `mmdc not found`**: Install the Mermaid CLI (`npm install -g @mermaid-js/mermaid-cli`), or pass `--mmdc-path` if the binary is not on `PATH`. There is no working arm64 build of the bundled Chromium, so on arm64 machines build the EPUB in CI instead — the `build-epub` job in `.github/workflows/test.yml` covers every language.
+**Build fails with `Pele is unavailable`**: Install Node.js >= 20 and make sure `node` is on `PATH` (`node --version`).
 
-**`mmdc` fails in CI or a container**: Chromium needs a sandbox-free profile. Write `{"args":["--no-sandbox","--disable-setuid-sandbox"]}` to a file and pass it via `--puppeteer-config`.
+**Pele bundle download or checksum failure**: The first build downloads the pinned Pele bundle from cdn.jsdelivr.net and checks every file's sha256. Offline or behind a proxy, run one build with network access; later builds use the cache in `scripts/.vendor-cache/pele/<version>/`. A checksum mismatch means the download was altered or truncated: delete that folder and build again.
 
 **Missing logo**: The script generates a text-only cover if `claude-howto-logo.png` is not found.
 
@@ -149,8 +143,8 @@ files remain the single source of truth.
   the corresponding pages on the site
 - References to non-markdown repo files (templates, scripts, JSON) become
   GitHub blob URLs that open the source on github.com
-- Mermaid diagrams render client-side via `mermaid.min.js`, served from the
-  built site (no CDN at runtime)
+- Mermaid diagrams render client-side with Pele (`pele.global.js`), served
+  from the built site (no CDN at runtime); they follow the dark mode toggle
 - Tailwind CSS compiled with the standalone CLI (Go binary, no Node.js) and
   served from the built site — responsive layout with sidebar nav, in-page
   TOC, dark mode toggle, and prev/next page navigation
@@ -204,7 +198,7 @@ ships HTML templates under `scripts/website_templates/`:
   `site/assets/tailwind.css` with just the utilities actually used
 - `site.css` — small layer of site-specific styles plus Pygments theme
 
-The Tailwind CLI binary, Mermaid bundle, and font files are downloaded on
+The Tailwind CLI binary, Pele bundle, and font files are downloaded on
 first build into `scripts/.vendor-cache/` (gitignored) — see
 `scripts/vendor_assets.py`.
 

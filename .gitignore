@@ -93,7 +93,8 @@ update-plan*.md
 site/
 .gstack/
 
-# Cached vendor binaries/assets for the website build (Tailwind CLI, Mermaid, fonts).
+# Cached vendor binaries/assets (Tailwind CLI, Pele bundle, fonts) for the website,
+# EPUB and Mermaid checks.
 scripts/.vendor-cache/
 
 # Local agent/tooling state

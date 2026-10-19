@@ -82,8 +82,9 @@ uv pip install -r scripts/requirements-dev.txt
 # Markdown linter (Node.js)
 npm install -g markdownlint-cli
 
-# Mermaid diagram validator (Node.js)
-npm install -g @mermaid-js/mermaid-cli
+# Mermaid diagrams render with Pele, which needs Node.js >= 20 (nothing to
+# install globally). Check your version:
+node --version
 
 # Install pre-commit and activate hooks
 uv pip install pre-commit
@@ -95,6 +96,8 @@ pre-commit install
 ```bash
 pre-commit run --all-files
 ```
+
+The first run downloads Node.js 22 for the Mermaid hooks (pre-commit provisions it, so they work even without a system Node.js) and the pinned Pele bundle into `scripts/.vendor-cache/pele/`; later runs work offline. The Mermaid hooks run in strict mode and fail if Pele cannot run. To commit offline before that first download, skip them with `SKIP=mermaid,vietnamese-mermaid,japanese-mermaid`.
 
 The hooks that run on every commit are:
 
