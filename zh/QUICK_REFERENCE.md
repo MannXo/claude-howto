@@ -68,7 +68,7 @@ chmod +x ~/.claude/hooks/*.sh
 ### Plugins
 ```bash
 # 从示例安装（如果已发布）
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 /plugin install devops-automation
 /plugin install documentation
 ```
@@ -151,7 +151,7 @@ cp -r 03-skills/code-review-specialist ~/.claude/skills/
 # 使用：自动触发
 
 # 方法 4：插件（推荐）
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 # 使用：/review-pr
 ```
 
@@ -375,7 +375,7 @@ cp -r 03-skills/code-review-specialist ~/.claude/skills/
 ### 第 3 周及以后
 ```bash
 # 安装完整插件
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 
 # 使用打包功能
 /review-pr

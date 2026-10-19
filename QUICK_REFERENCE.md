@@ -68,7 +68,7 @@ chmod +x ~/.claude/hooks/*.sh
 ### Plugins
 ```bash
 # Install from examples (if published)
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 /plugin install devops-automation
 /plugin install documentation
 ```
@@ -132,7 +132,7 @@ claude -r "session"    # Resume session by name/ID
 | **Git Worktrees** | Built-in | `claude -w <name>` |
 | **Auto Memory** | Built-in | Auto-saves to `~/.claude/projects/<project>/memory/` |
 | **Task List** | Built-in | `Ctrl+T` (checklist), `/tasks` (background work) |
-| **Bundled Skills (20)** | Built-in | `/batch`, `/claude-api`, `/code-review [low\|medium\|high\|xhigh\|max\|ultra] [--fix] [--comment] [pr#\|branch\|path]` *(Claude can also start it on its own, everywhere since v2.1.246; with no level given it reuses the last one you typed, v2.1.223)*, `/simplify` *(cleanup-only review; distinct from `/code-review` again since v2.1.154)*, `/debug`, `/fewer-permission-prompts`, `/loop`, `/run` *(v2.1.145+)*, `/run-skill-generator` *(v2.1.145+)*, `/verify` *(v2.1.145+; explicit invocation only since v2.1.215 — Claude won't trigger this on its own)* |
+| **Bundled Skills** | Built-in | `/batch`, `/claude-api`, `/code-review [low\|medium\|high\|xhigh\|max\|ultra] [--fix] [--comment] [pr#\|branch\|path]` *(Claude can also start it on its own, everywhere since v2.1.246; with no level given it reuses the last one you typed, v2.1.223)*, `/simplify` *(cleanup-only review; distinct from `/code-review` again since v2.1.154)*, `/debug`, `/fewer-permission-prompts`, `/loop`, `/run` *(v2.1.145+)*, `/run-skill-generator` *(v2.1.145+)*, `/verify` *(v2.1.145+; explicit invocation only since v2.1.215 — Claude won't trigger this on its own)* |
 
 ---
 
@@ -153,7 +153,7 @@ cp -r 03-skills/code-review-specialist ~/.claude/skills/
 # Use: Auto-invoked
 
 # Method 4: Plugin (best)
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 # Use: /review-pr
 ```
 
@@ -377,7 +377,7 @@ cp -r 03-skills/code-review-specialist ~/.claude/skills/
 ### Week 3+
 ```bash
 # Install complete plugin
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 
 # Use bundled features
 /review-pr

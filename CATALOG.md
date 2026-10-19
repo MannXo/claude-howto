@@ -274,7 +274,7 @@ Bundled collections of commands, agents, MCP servers, and hooks.
 
 | Plugin | Description | Components | When to Use | Scope | Installation |
 |--------|-------------|------------|-------------|-------|--------------|
-| `pr-review` | PR review workflow | 3 commands, 3 agents, GitHub MCP | Code reviews | Project | `/plugin install pr-review` |
+| `pr-review` | PR review workflow | 3 commands, 3 agents, GitHub MCP | Code reviews | Project | `claude --plugin-dir ./07-plugins/pr-review` |
 | `devops-automation` | Deployment & monitoring | 4 commands, 3 agents, K8s MCP | DevOps tasks | Project | `/plugin install devops-automation` |
 | `documentation` | Doc generation suite | 4 commands, 3 agents, templates | Documentation | Project | `/plugin install documentation` |
 
@@ -556,7 +556,7 @@ cp 02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 | 4. Automation | Hooks | `cp 06-hooks/*.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/*.sh` |
 | 5. External | MCP | `claude mcp add github -- npx -y @modelcontextprotocol/server-github` |
 | 6. Advanced | Skills | `cp -r 03-skills/* ~/.claude/skills/` |
-| 7. Complete | Plugins | `/plugin install pr-review` |
+| 7. Complete | Plugins | `claude --plugin-dir ./07-plugins/pr-review` |
 
 ---
 

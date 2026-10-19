@@ -251,7 +251,7 @@ cp -r 03-skills/* ~/.claude/skills/
 
 | Плагін | Опис | Компоненти | Коли використовувати | Область | Встановлення |
 |--------|------|------------|---------------------|---------|-------------|
-| `pr-review` | Процес ревʼю PR | 3 команди, 3 агенти, GitHub MCP | Ревʼю коду | Проект | `/plugin install pr-review` |
+| `pr-review` | Процес ревʼю PR | 3 команди, 3 агенти, GitHub MCP | Ревʼю коду | Проект | `claude --plugin-dir ./07-plugins/pr-review` |
 | `devops-automation` | Розгортання та моніторинг | 4 команди, 3 агенти, K8s MCP | DevOps-завдання | Проект | `/plugin install devops-automation` |
 | `documentation` | Набір генерації документації | 4 команди, 3 агенти, шаблони | Документація | Проект | `/plugin install documentation` |
 
@@ -505,7 +505,7 @@ cp 02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 | 4. Автоматизація | Хуки | `cp 06-hooks/*.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/*.sh` |
 | 5. Зовнішнє | MCP | `claude mcp add github -- npx -y @modelcontextprotocol/server-github` |
 | 6. Просунуте | Навички | `cp -r 03-skills/* ~/.claude/skills/` |
-| 7. Комплексне | Плагіни | `/plugin install pr-review` |
+| 7. Комплексне | Плагіни | `claude --plugin-dir ./07-plugins/pr-review` |
 
 ---
 

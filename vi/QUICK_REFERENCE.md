@@ -68,7 +68,7 @@ chmod +x ~/.claude/hooks/*.sh
 ### Plugins
 ```bash
 # Cài đặt từ ví dụ (nếu đã xuất bản)
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 /plugin install devops-automation
 /plugin install documentation
 ```
@@ -151,7 +151,7 @@ cp -r 03-skills/code-review-specialist ~/.claude/skills/
 # Sử dụng: Tự động gọi
 
 # Cách 4: Plugin (tốt nhất)
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 # Sử dụng: /review-pr
 ```
 
@@ -375,7 +375,7 @@ cp -r 03-skills/code-review-specialist ~/.claude/skills/
 ### Tuần 3+
 ```bash
 # Cài đặt plugin hoàn chỉnh
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 
 # Sử dụng tính năng được gói
 /review-pr

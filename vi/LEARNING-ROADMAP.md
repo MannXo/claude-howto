@@ -92,7 +92,7 @@ graph TD
 
 | Bước | Tính Năng | Độ Phức Tạp | Thời Gian | Cấp Độ | Dependencies | Tại Sao Học Cái Này | Lợi Ích Chính |
 |------|---------|-----------|----------|-------|--------------|------------------|--------------|
-| **1** | [Lệnh Slash](01-slash-commands/) | ⭐ Người mới | 30 phút | Level 1 | None | Gains năng suất nhanh (55+ built-in + 20 bundled skills) | Tự động hóa tức thì, tiêu chuẩn team |
+| **1** | [Lệnh Slash](01-slash-commands/) | ⭐ Người mới | 30 phút | Level 1 | None | Gains năng suất nhanh (55+ built-in + bundled skills) | Tự động hóa tức thì, tiêu chuẩn team |
 | **2** | [Bộ Nhớ](02-memory/) | ⭐⭐ Người mới+ | 45 phút | Level 1 | None | Thiết yếu cho tất cả tính năng | Ngữ cảnh lưu trữ, sở thích |
 | **3** | [Checkpoints](08-checkpoints/) | ⭐⭐ Trung cấp | 45 phút | Level 1 | Quản lý session | Khám phá an toàn | Thử nghiệm, phục hồi |
 | **4** | [CLI Cơ Bản](10-cli/) | ⭐⭐ Người mới+ | 30 phút | Level 1 | None | Sử dụng CLI cốt | Mode tương tác & print |

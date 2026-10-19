@@ -79,7 +79,7 @@ chmod +x ~/.claude/hooks/*.sh
 
 ```bash
 # Встановити з прикладів (якщо опубліковані)
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 /plugin install devops-automation
 /plugin install documentation
 ```
@@ -165,7 +165,7 @@ cp -r 03-skills/code-review-specialist ~/.claude/skills/
 # Використання: Автовиклик
 
 # Спосіб 4: Плагін (найкращий)
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 # Використання: /review-pr
 ```
 
@@ -407,7 +407,7 @@ cp -r 03-skills/code-review-specialist ~/.claude/skills/
 
 ```bash
 # Встановити повний плагін
-/plugin install pr-review
+claude --plugin-dir ./07-plugins/pr-review
 
 # Використати вбудовані функції
 /review-pr

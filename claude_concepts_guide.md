@@ -555,13 +555,13 @@ graph TB
 
 ### Bundled Skills
 
-Claude Code now includes 20 bundled skills available out of the box:
+Claude Code includes bundled skills available out of the box, including:
 
 | Skill | Command | Purpose |
 |-------|---------|---------|
 | **Batch** | `/batch` | Run operations across multiple files or items |
 | **Claude API** | `/claude-api` | Load Claude API and Managed Agents reference material for your project's language; activates automatically when your code imports `anthropic` or `@anthropic-ai/sdk` |
-| **Code Review** | `/code-review` | Review the current diff for correctness bugs at a chosen effort level. A distinct skill from `/simplify` (quality/reuse cleanups), which was split back out in v2.1.154. Explicit invocation only since v2.1.215 |
+| **Code Review** | `/code-review` | Review the current diff for correctness bugs at a chosen effort level. A distinct skill from `/simplify` (quality/reuse cleanups), which was split back out in v2.1.154. Claude can also start it on its own, everywhere since v2.1.246 |
 | **Simplify** | `/simplify` | Quality, reuse, and cleanup review — distinct from `/code-review` again since v2.1.154 |
 | **Debug** | `/debug` | Turn on debug logging for the current session and troubleshoot by reading the session debug log |
 | **Fewer Permission Prompts** | `/fewer-permission-prompts` | Scan transcripts and propose a prioritized allowlist for common read-only tools |

@@ -245,7 +245,7 @@ Bộ sưu tập được đóng gói của commands, agents, MCP servers, và ho
 
 | Plugin | Mô Tả | Components | Khi Nào Dùng | Phạm Vi | Cài Đặt |
 |--------|-------------|------------|-------------|-------|--------------|
-| `pr-review` | Workflow review PR | 3 commands, 3 agents, GitHub MCP | Review code | Project | `/plugin install pr-review` |
+| `pr-review` | Workflow review PR | 3 commands, 3 agents, GitHub MCP | Review code | Project | `claude --plugin-dir ./07-plugins/pr-review` |
 | `devops-automation` | Triển khai & giám sát | 4 commands, 3 agents, K8s MCP | Tasks DevOps | Project | `/plugin install devops-automation` |
 | `documentation` | Bộ tạo tài liệu | 4 commands, 3 agents, templates | Tài liệu | Project | `/plugin install documentation` |
 
@@ -495,7 +495,7 @@ cp ../02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 | 4. Tự Động Hóa | Hooks | `cp ../06-hooks/*.sh ~/.claude/hooks/ && chmod +x ~/.claude/hooks/*.sh` |
 | 5. Bên Ngoài | MCP | `claude mcp add github -- npx -y @modelcontextprotocol/server-github` |
 | 6. Nâng Cao | Skills | `cp -r ../03-skills/* ~/.claude/skills/` |
-| 7. Hoàn Chỉnh | Plugins | `/plugin install pr-review` |
+| 7. Hoàn Chỉnh | Plugins | `claude --plugin-dir ./07-plugins/pr-review` |
 
 ---
 
