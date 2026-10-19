@@ -84,10 +84,17 @@ repos:
         pass_filenames: false
         types: [markdown]
 
+      # The three *mermaid hooks render every diagram with the pinned Pele
+      # bundle. `language: node` makes pre-commit provision Node.js 22 for the
+      # hook (nodeenv), so no system Node is needed, and `--strict` makes a
+      # failed bundle download fail the hook instead of skipping it. The first
+      # run needs network access; offline, skip them with
+      # SKIP=mermaid,vietnamese-mermaid,japanese-mermaid.
       - id: mermaid
         name: mermaid-syntax
-        language: system
-        entry: python scripts/check_mermaid.py
+        language: node
+        language_version: 22.12.0
+        entry: python scripts/check_mermaid.py --strict
         pass_filenames: false
         types: [markdown]
         verbose: true
@@ -108,9 +115,9 @@ repos:
         types: [markdown]
 
       # The EPUB build is intentionally CI-only (see the `build-epub` job in
-      # .github/workflows/test.yml). It needs a local `mmdc` binary, which has
-      # no working arm64 build, so running it here made the gate impossible to
-      # satisfy on arm64 machines while `check_mermaid.py` skipped silently.
+      # .github/workflows/test.yml): it is a slow full-book build. The mermaid
+      # hooks above already render every diagram with the same Pele bundle
+      # the EPUB uses, so a broken diagram still fails at commit time.
 
   # Vietnamese documentation checks
   - repo: local
@@ -132,8 +139,9 @@ repos:
 
       - id: vietnamese-mermaid
         name: vietnamese-mermaid-syntax
-        language: system
-        entry: python scripts/check_mermaid.py
+        language: node
+        language_version: 22.12.0
+        entry: python scripts/check_mermaid.py --strict
         pass_filenames: false
         files: ^vi/.*\.md$
         verbose: true
@@ -166,8 +174,9 @@ repos:
 
       - id: japanese-mermaid
         name: japanese-mermaid-syntax
-        language: system
-        entry: python scripts/check_mermaid.py
+        language: node
+        language_version: 22.12.0
+        entry: python scripts/check_mermaid.py --strict
         pass_filenames: false
         files: ^ja/.*\.md$
         verbose: true
