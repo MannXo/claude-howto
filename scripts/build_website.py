@@ -552,7 +552,8 @@ def replace_mermaid_blocks(md_content: str) -> str:
     """Replace ```mermaid``` fences with `<pre class="mermaid">` for client-side render.
 
     The page script swaps each block for a Pele-rendered diagram; without
-    JavaScript the source stays readable.
+    JavaScript, or when Pele cannot render a diagram, the source stays as a
+    readable code block.
     """
 
     def _replace(match: re.Match[str]) -> str:

@@ -258,10 +258,11 @@ ET.register_namespace("", SVG_NS)
 EPUB_DIAGRAM_FONT = "Arial, Helvetica, 'Liberation Sans', sans-serif"
 
 _ALIAS_DECL_RE = re.compile(
-    r"^(--_[a-z]+)\s*:\s*var\(\s*(--pele-[a-z-]+)\s*,\s*(.+?)\s*\)$"
+    r"^(--_[a-z0-9]+)\s*:\s*var\(\s*(--pele-[a-z0-9-]+)\s*,\s*(.+?)\s*\)$"
 )
-_PELE_VAR_RE = re.compile(r"var\(\s*(--pele-[a-z-]+)\s*,\s*([^()]+?)\s*\)")
-_ALIAS_REF_RE = re.compile(r"var\(\s*(--_[a-z]+)\s*\)")
+# Digits matter: series colours are `--pele-series-1`, `--pele-series-2`, ...
+_PELE_VAR_RE = re.compile(r"var\(\s*(--pele-[a-z0-9-]+)\s*,\s*([^()]+?)\s*\)")
+_ALIAS_REF_RE = re.compile(r"var\(\s*(--_[a-z0-9]+)\s*\)")
 _COLOR_MIX_RE = re.compile(
     r"color-mix\(\s*in srgb\s*,\s*(#[0-9a-fA-F]{3,6})\s+(\d+(?:\.\d+)?)%"
     r"\s*,\s*(#[0-9a-fA-F]{3,6})\s*\)"

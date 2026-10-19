@@ -11,15 +11,11 @@ samp {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-/* Mermaid diagrams (rendered by Pele): centre and constrain width so they
-   read on mobile. Pele draws with the --pele-* custom properties below, so the
-   light/dark toggle on <html> restyles diagrams without re-rendering them. */
+/* Mermaid diagrams (rendered by Pele). Pele draws with the --pele-* custom
+   properties below, so the light/dark toggle on <html> restyles diagrams
+   without re-rendering them. Borders keep >= 3:1 against the page and the
+   node surface in both themes (WCAG 1.4.11). */
 .mermaid {
-  background: transparent !important;
-  padding: 1rem 0;
-  margin: 1.5rem 0;
-  text-align: center;
-  overflow-x: auto;
   --pele-font: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --pele-font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --pele-bg: #f8fafc;
@@ -28,7 +24,7 @@ samp {
   --pele-line: #475569;
   --pele-surface: #ffffff;
   --pele-surface-alt: #f1f5f9;
-  --pele-border: #94a3b8;
+  --pele-border: #64748b;
   --pele-accent: #0284c7;
 }
 
@@ -39,13 +35,32 @@ samp {
   --pele-line: #94a3b8;
   --pele-surface: #0f172a;
   --pele-surface-alt: #1e293b;
-  --pele-border: #475569;
+  --pele-border: #64748b;
   --pele-accent: #38bdf8;
+}
+
+/* Layout applies to the mounted diagram only: a <pre class="mermaid"> left
+   in place (no JavaScript, or a diagram Pele cannot render) stays a normal,
+   readable dark code block. Centre and constrain width so diagrams read on
+   mobile. */
+div.mermaid {
+  background: transparent !important;
+  padding: 1rem 0;
+  margin: 1.5rem 0;
+  text-align: center;
+  overflow-x: auto;
 }
 
 .mermaid svg {
   max-width: 100%;
   height: auto;
+}
+
+/* Dark mode: a node whose Mermaid source sets a fill but no text colour
+   (`style A fill:#e1f5ff`) gets a light fill, so its label would inherit the
+   light --pele-fg. Give such labels dark text, as in light mode. */
+.dark .mermaid .pele-node:has(> [style*="fill:"]) > .pele-label:not([style*="fill:"]) {
+  fill: #0f172a;
 }
 
 /* Prevent prose pre/code from inheriting the Tailwind dark prose background

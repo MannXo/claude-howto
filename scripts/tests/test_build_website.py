@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import shutil
 import subprocess
 import sys
@@ -471,6 +472,10 @@ class TestBuildWebsite:
         assert "vendor/pele/pele.global.js" in sc_html
         assert "pele.mount(" in sc_html
         assert "vendor/mermaid/" not in sc_html
+        # A diagram Pele rejects (reported on m.error, not thrown) gets its
+        # source back instead of a bare error message.
+        assert "m.error !== undefined" in sc_html
+        assert "container.replaceWith(pre)" in sc_html
 
         # Stylesheet copied into assets
         assert (out_dir / "assets" / "site.css").exists()
@@ -700,6 +705,65 @@ class TestPeleBundle:
         manifest = json.loads((tmp_path / "manifest.json").read_text("utf-8"))
         assert manifest["pele"] == vendor_assets.PELE_VERSION
         assert "mermaid" not in manifest
+
+
+# =============================================================================
+# Diagram styles (site.css)
+# =============================================================================
+
+SITE_CSS = Path(__file__).parent.parent / "website_templates" / "site.css"
+# Light fills that site lessons set on nodes without a text colour.
+SOURCE_NODE_FILLS = ("#e1f5ff", "#e1f5fe", "#fff9c4")
+
+
+def _css_rule(css: str, selector: str) -> str:
+    match = re.search(rf"^{re.escape(selector)}\s*\{{(.*?)\}}", css, re.M | re.S)
+    assert match, f"no rule for {selector!r} in site.css"
+    return match.group(1)
+
+
+def _css_color(rule: str, prop: str) -> str:
+    match = re.search(rf"(?<![\w-]){re.escape(prop)}:\s*(#[0-9a-fA-F]{{6}})", rule)
+    assert match, f"no {prop} colour in rule"
+    return match.group(1)
+
+
+def _contrast(first: str, second: str) -> float:
+    def luminance(color: str) -> float:
+        channels = [int(color[i : i + 2], 16) / 255 for i in (1, 3, 5)]
+        r, g, b = (
+            c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+            for c in channels
+        )
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+    high, low = sorted((luminance(first), luminance(second)), reverse=True)
+    return (high + 0.05) / (low + 0.05)
+
+
+class TestDiagramStyles:
+    @pytest.mark.parametrize("selector", [".mermaid", ".dark .mermaid"])
+    def test_border_has_3_to_1_contrast(self, selector: str) -> None:
+        # --pele-bg mirrors the page background (bg-slate-50 / bg-slate-950).
+        rule = _css_rule(SITE_CSS.read_text("utf-8"), selector)
+        border = _css_color(rule, "--pele-border")
+        for surface in ("--pele-bg", "--pele-surface", "--pele-surface-alt"):
+            assert _contrast(border, _css_color(rule, surface)) >= 3, surface
+
+    def test_layout_rules_leave_the_source_fallback_alone(self) -> None:
+        css = SITE_CSS.read_text("utf-8")
+        assert "background" not in _css_rule(css, ".mermaid")
+        assert "background: transparent" in _css_rule(css, "div.mermaid")
+
+    def test_dark_labels_on_source_fills_are_readable(self) -> None:
+        rule = _css_rule(
+            SITE_CSS.read_text("utf-8"),
+            '.dark .mermaid .pele-node:has(> [style*="fill:"]) '
+            '> .pele-label:not([style*="fill:"])',
+        )
+        label = _css_color(rule, "fill")
+        for fill in SOURCE_NODE_FILLS:
+            assert _contrast(label, fill) >= 4.5, fill
 
 
 # =============================================================================

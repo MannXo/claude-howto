@@ -104,6 +104,37 @@ ADVERSARIAL_SVG = (
     "</text></g></g></svg>"
 )
 
+# Real Pele 1.6.0 pie output (trimmed to two slices). Series colours use
+# numbered custom properties (`--pele-series-1`), as do timeline, mindmap and
+# journey diagrams.
+PIE_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" class="pele pele-pie" '
+    'viewBox="0 0 397 352" width="397" height="352" style="max-width:100%;'
+    "height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);"
+    "--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);"
+    "--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);"
+    "--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);"
+    "color:var(--_fg);--_tw:var(--pele-title-weight,bold);"
+    "--_fm:var(--pele-font-mono,monospace);font:16px sans-serif;"
+    "letter-spacing:normal;word-spacing:normal;text-transform:none;"
+    'direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" '
+    'role="graphics-document document" aria-roledescription="pie">'
+    '<text class="pele-title" font-weight="var(--_tw)" text-anchor="middle" '
+    'xml:space="preserve"><tspan x="198.5" y="25.6">Pets</tspan></text>'
+    '<g class="pele-slices" transform="translate(156,196)" stroke="var(--_bg)" '
+    'stroke-width="1" stroke-linejoin="round">'
+    '<path class="pele-slice" data-id="Dogs" '
+    'd="M0,0L0,-120A120,120 0 1 1 -115.39,-32.93Z" '
+    'fill="var(--pele-series-1,#4c78a8)"/>'
+    '<path class="pele-slice" data-id="Cats" '
+    'd="M0,0L-115.39,-32.93A120,120 0 0 1 0,-120Z" '
+    'fill="var(--pele-series-2,#f58518)"/></g>'
+    '<g class="pele-legend" font-size="14">'
+    '<g class="pele-legend-item" data-id="Dogs"><rect x="336" y="164" '
+    'width="12" height="12" rx="2" fill="var(--pele-series-1,#4c78a8)"/>'
+    '<text x="372.34" y="174.9" text-anchor="middle">Dogs</text></g></g></svg>'
+)
+
 
 def _attribute_values(svg: str) -> list[str]:
     return [v for el in ET.fromstring(svg).iter() for v in el.attrib.values()]
@@ -587,7 +618,9 @@ class TestMermaidRenderer:
 
 
 class TestFlattenSvgVars:
-    @pytest.mark.parametrize("svg", [PELE_SVG, ADVERSARIAL_SVG], ids=["real", "adv"])
+    @pytest.mark.parametrize(
+        "svg", [PELE_SVG, ADVERSARIAL_SVG, PIE_SVG], ids=["real", "adv", "series"]
+    )
     def test_no_css_variables_left_and_valid_xml(self, svg: str) -> None:
         out = flatten_svg_vars(svg)
 
@@ -613,6 +646,20 @@ class TestFlattenSvgVars:
         halo = next(t for t in root.iter(f"{SVG_NS}text") if t.get("stroke"))
         # color-mix(in srgb, #e6e6e6 50%, #fff)
         assert halo.get("stroke") == "#f2f2f2"
+
+    def test_numbered_series_variables_resolve(self) -> None:
+        root = ET.fromstring(flatten_svg_vars(PIE_SVG))
+        slices = [p for p in root.iter(f"{SVG_NS}path") if p.get("data-id")]
+
+        assert [p.get("fill") for p in slices] == ["#4c78a8", "#f58518"]
+        title = next(root.iter(f"{SVG_NS}text"))
+        assert title.get("font-weight") == "bold"
+        themed = ET.fromstring(
+            flatten_svg_vars(PIE_SVG, {"--pele-series-1": "#123456"})
+        )
+        assert {
+            r.get("fill") for r in themed.iter(f"{SVG_NS}rect") if r.get("rx") == "2"
+        } == {"#123456"}
 
     def test_theme_override_applied(self) -> None:
         root = ET.fromstring(

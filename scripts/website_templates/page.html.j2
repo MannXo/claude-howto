@@ -214,7 +214,14 @@
         container.className = 'mermaid';
         pre.replaceWith(container);
         try {
-          pele.mount(container, source, { zoom: 'auto', autoDirection: true });
+          var m = pele.mount(container, source, { zoom: 'auto', autoDirection: true });
+          // mount() reports a diagram it cannot parse or render on m.error
+          // (showing only a short message) instead of throwing: put the
+          // readable source back.
+          if (m.error !== undefined) {
+            m.destroy();
+            container.replaceWith(pre);
+          }
         } catch (e) {
           container.replaceWith(pre);
         }
