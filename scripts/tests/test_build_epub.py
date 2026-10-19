@@ -271,9 +271,21 @@ class TestMermaidProcessing:
             encoding="utf-8",
         )
 
-        diagrams = extract_all_mermaid_blocks([(md_file, "Steps")], logger)
+        source = 'graph TD\n    A["1. Load file"] --> B[2. Parse]'
 
-        assert diagrams == [(1, 'graph TD\n    A["1. Load file"] --> B[2. Parse]')]
+        diagrams = extract_all_mermaid_blocks([(md_file, "Steps")], logger)
+        assert diagrams == [(1, source)]
+
+        state = BuildState()
+        config = EPUBConfig(root_path=tmp_path, output_path=tmp_path / "o.epub")
+        with patch(
+            "build_epub.render_diagrams",
+            return_value=[PeleResult(svg=PELE_SVG, diagram_type="flowchart")],
+        ) as mock_render:
+            MermaidRenderer(config, state, logger).render_all(diagrams)
+
+        assert mock_render.call_args.args[0] == [source]
+        assert list(state.mermaid_cache) == [source]
 
     def test_extract_mermaid_blocks(
         self, tmp_path: Path, logger: logging.Logger
