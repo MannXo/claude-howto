@@ -56,6 +56,15 @@ div.mermaid {
   height: auto;
 }
 
+/* Pele puts its zoom buttons (a box 56px tall, 8px below the top edge) over
+   a diagram it shrank to fit, and sets [hidden] on the box when the diagram
+   fits. Start the diagram below the box so the buttons never cover a label.
+   Room on top, not on the side: Pele lays the diagram out to the content
+   width, so side padding would shrink it further and re-lay it out. */
+div.mermaid:has(> .pele-zoom:not([hidden])) {
+  padding-top: calc(8px + 56px + 0.5rem);
+}
+
 /* Dark mode: a node whose Mermaid source sets a fill but no text colour
    (`style A fill:#e1f5ff`) gets a light fill, so its label would inherit the
    light --pele-fg. Give such labels dark text, as in light mode. */

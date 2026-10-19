@@ -476,6 +476,13 @@ class TestBuildWebsite:
         # source back instead of a bare error message.
         assert "m.error !== undefined" in sc_html
         assert "container.replaceWith(pre)" in sc_html
+        # Zoom stays on, and zoom makes a shrunk diagram a tab stop: every
+        # <svg> Pele draws (it draws a new one on resize and font load) is
+        # named in onRender after the nearest heading.
+        assert "zoom: 'auto'" in sc_html
+        assert "onRender: nameDiagram" in sc_html
+        assert "svg.setAttribute('aria-label'" in sc_html
+        assert "svg.hasAttribute('aria-labelledby')" in sc_html
 
         # Stylesheet copied into assets
         assert (out_dir / "assets" / "site.css").exists()
@@ -754,6 +761,24 @@ class TestDiagramStyles:
         css = SITE_CSS.read_text("utf-8")
         assert "background" not in _css_rule(css, ".mermaid")
         assert "background: transparent" in _css_rule(css, "div.mermaid")
+
+    def test_diagram_starts_below_the_zoom_buttons(self) -> None:
+        # Pele 1.6.0 draws its zoom box 8px below the top of a diagram it
+        # shrank to fit (two 24px buttons, 2px gap, 2px padding, 1px border:
+        # 56px tall) and sets [hidden] on it when the diagram fits.
+        rule = _css_rule(
+            SITE_CSS.read_text("utf-8"),
+            "div.mermaid:has(> .pele-zoom:not([hidden]))",
+        )
+        match = re.search(r"padding-top:\s*([^;]+);", rule)
+        assert match, "no padding-top in the zoom-box rule"
+        value = match.group(1)
+        room = sum(float(n) for n in re.findall(r"([\d.]+)px", value))
+        room += 16 * sum(float(n) for n in re.findall(r"([\d.]+)rem", value))
+        assert room > 8 + 56
+        # Side padding would narrow the width Pele lays the diagram out to.
+        assert "padding-right" not in rule
+        assert "padding-left" not in rule
 
     def test_dark_labels_on_source_fills_are_readable(self) -> None:
         rule = _css_rule(

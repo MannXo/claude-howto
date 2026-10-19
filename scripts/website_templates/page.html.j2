@@ -208,13 +208,40 @@
       // would pass on the monospace font and the dark code-block background.
       // Colours come from the --pele-* variables in site.css, so the theme
       // toggle restyles diagrams without re-rendering them.
+      var headings = document.querySelectorAll(
+        'article h1, article h2, article h3, article h4'
+      );
+      // Text of the last heading before `node` in document order.
+      function headingBefore(node) {
+        var text = '';
+        for (var i = 0; i < headings.length; i++) {
+          if (!(headings[i].compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING)) break;
+          text = headings[i].textContent.trim();
+        }
+        return text;
+      }
       document.querySelectorAll('pre.mermaid').forEach(function (pre) {
         var source = pre.textContent;
+        var name = headingBefore(pre) || 'Diagram';
         var container = document.createElement('div');
         container.className = 'mermaid';
         pre.replaceWith(container);
+        // Zoom makes a shrunk diagram a tab stop, so it needs a name beyond
+        // its role ("flowchart"). Pele draws a new <svg> on every render
+        // (resize, font load), so name it in onRender, not once after mount.
+        function nameDiagram() {
+          var svg = container.firstElementChild;
+          if (!svg || svg.localName !== 'svg') return;
+          if (svg.hasAttribute('aria-label') || svg.hasAttribute('aria-labelledby')) return;
+          var kind = svg.getAttribute('aria-roledescription');
+          svg.setAttribute('aria-label', kind ? name + ' — ' + kind : name);
+        }
         try {
-          var m = pele.mount(container, source, { zoom: 'auto', autoDirection: true });
+          var m = pele.mount(container, source, {
+            zoom: 'auto',
+            autoDirection: true,
+            onRender: nameDiagram
+          });
           // mount() reports a diagram it cannot parse or render on m.error
           // (showing only a short message) instead of throwing: put the
           // readable source back.
