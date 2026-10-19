@@ -28,11 +28,12 @@ Features:
     - Rewrites repo-file/folder references (`.json`, `.sh`, `.py`, etc.) to
       GitHub source URLs so users can jump to the source on github.com.
     - Self-hosted Tailwind CSS (compiled via standalone CLI), Inter font, and
-      `mermaid.min.js` — no third-party CDN scripts at runtime.
+      the pinned Pele bundle (`pele.global.js`) that renders Mermaid diagrams
+      in the browser — no third-party CDN scripts at runtime.
     - Light/dark theme toggle, mobile-friendly responsive layout, sidebar.
     - Hostable as plain static files (e.g. GitHub Pages).
 
-Vendor assets (Tailwind CLI binary, Mermaid bundle, font files) are downloaded
+Vendor assets (Tailwind CLI binary, Pele bundle, font files) are downloaded
 on first build and cached under `scripts/.vendor-cache/`. See
 `scripts/vendor_assets.py` for details.
 """
@@ -59,7 +60,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from vendor_assets import (
     build_tailwind_css,
     fetch_fonts,
-    fetch_mermaid,
+    fetch_pele,
     write_vendor_manifest,
 )
 
@@ -548,7 +549,11 @@ MERMAID_BLOCK_RE = re.compile(r"```mermaid\n(.*?)```", re.DOTALL)
 
 
 def replace_mermaid_blocks(md_content: str) -> str:
-    """Replace ```mermaid``` fences with `<pre class="mermaid">` for client-side render."""
+    """Replace ```mermaid``` fences with `<pre class="mermaid">` for client-side render.
+
+    The page script swaps each block for a Pele-rendered diagram; without
+    JavaScript the source stays readable.
+    """
 
     def _replace(match: re.Match[str]) -> str:
         code = match.group(1)
@@ -997,7 +1002,7 @@ def build_website(
 ) -> Path:
     """Generate the full static site at `config.output_path`.
 
-    ``skip_vendor=True`` skips the Tailwind CLI compile and the Mermaid/font
+    ``skip_vendor=True`` skips the Tailwind CLI compile and the Pele/font
     downloads — used by tests that don't need network access.
     """
     if not config.root_path.is_dir():
@@ -1037,7 +1042,7 @@ def build_website(
         logger.info("Skipping vendor asset fetch (skip_vendor=True)")
     else:
         vendor_dir = assets_dir / "vendor"
-        fetch_mermaid(vendor_dir / "mermaid", logger)
+        fetch_pele(vendor_dir / "pele", logger)
         fonts_css = fetch_fonts(vendor_dir / "fonts", logger)
         # Run Tailwind LAST so it can scan the rendered HTML for class usage.
         build_tailwind_css(

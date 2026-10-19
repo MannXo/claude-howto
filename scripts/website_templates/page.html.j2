@@ -200,16 +200,24 @@
     {% endif %}
   </div>
 
-  <script src="{{ assets_prefix }}vendor/mermaid/mermaid.min.js"></script>
+  <script src="{{ assets_prefix }}vendor/pele/pele.global.js"></script>
   <script>
     (function () {
-      if (typeof mermaid === 'undefined') return;
-      var prefersDark = document.documentElement.classList.contains('dark');
-      mermaid.initialize({
-        startOnLoad: true,
-        theme: prefersDark ? 'dark' : 'default',
-        securityLevel: 'strict',
-        fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
+      if (typeof pele === 'undefined') return;
+      // Mount each diagram into a fresh <div>, never into the <pre>: the <pre>
+      // would pass on the monospace font and the dark code-block background.
+      // Colours come from the --pele-* variables in site.css, so the theme
+      // toggle restyles diagrams without re-rendering them.
+      document.querySelectorAll('pre.mermaid').forEach(function (pre) {
+        var source = pre.textContent;
+        var container = document.createElement('div');
+        container.className = 'mermaid';
+        pre.replaceWith(container);
+        try {
+          pele.mount(container, source, { zoom: 'auto', autoDirection: true });
+        } catch (e) {
+          container.replaceWith(pre);
+        }
       });
     })();
   </script>
