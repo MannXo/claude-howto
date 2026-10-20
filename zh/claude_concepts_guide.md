@@ -859,7 +859,7 @@ sequenceDiagram
 
 ### 预构建 Skills
 
-Claude Code 现在内置了 20 个 bundled skills，可直接使用：
+Claude Code 内置了一些 bundled skills，可直接使用，包括：
 
 | Skill | 命令 | 用途 |
 |-------|------|------|

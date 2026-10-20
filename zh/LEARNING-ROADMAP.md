@@ -98,7 +98,7 @@ graph TD
 
 | 步骤 | 功能 | 复杂度 | 时间 | 水平 | 依赖 | 为什么学它 | 关键收益 |
 |------|---------|-----------|------|-------|--------------|----------------|--------------|
-| **1** | [Slash Commands](01-slash-commands/README.md) | ⭐ Beginner | 30 分钟 | Level 1 | 无 | 快速获得生产力提升（55+ 内置命令 + 20 个 bundled skills） | 立即自动化、统一团队规范 |
+| **1** | [Slash Commands](01-slash-commands/README.md) | ⭐ Beginner | 30 分钟 | Level 1 | 无 | 快速获得生产力提升（55+ 内置命令 + bundled skills） | 立即自动化、统一团队规范 |
 | **2** | [Memory](02-memory/README.md) | ⭐⭐ Beginner+ | 45 分钟 | Level 1 | 无 | 所有功能的基础 | 持久上下文、偏好设置 |
 | **3** | [Checkpoints](08-checkpoints/README.md) | ⭐⭐ Intermediate | 45 分钟 | Level 1 | 会话管理 | 安全探索 | 试验、恢复 |
 | **4** | [CLI Basics](10-cli/README.md) | ⭐⭐ Beginner+ | 30 分钟 | Level 1 | 无 | 核心 CLI 用法 | 交互式与 print mode |
